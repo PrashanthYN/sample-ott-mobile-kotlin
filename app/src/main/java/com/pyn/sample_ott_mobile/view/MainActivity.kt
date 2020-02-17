@@ -1,7 +1,8 @@
-package com.pyn.sample_ott_mobile
+package com.pyn.sample_ott_mobile.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.pyn.sample_ott_mobile.R
 
 class MainActivity : AppCompatActivity() {
 
