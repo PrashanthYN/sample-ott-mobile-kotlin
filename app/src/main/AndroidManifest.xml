@@ -13,7 +13,7 @@
         android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme"
       >
-        <activity android:name=".view.MainActivity">
+        <activity android:name="com.pyn.sample_ott_mobile.ui.view.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

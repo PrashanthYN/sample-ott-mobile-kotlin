@@ -1,4 +1,4 @@
-package com.pyn.sample_ott_mobile.view
+package com.pyn.sample_ott_mobile.ui.view
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
