@@ -17,20 +17,21 @@ import com.pyn.sample_ott_mobile.util.StringConstants
 import com.pyn.sample_ott_mobile.viewmodel.ContentGridViewModel
 import kotlinx.android.synthetic.main.content_grid_main.*
 
-class ContentFragment:Fragment() {
+class ContentFragment : Fragment() {
 
-    private var contentGridViewModel: ContentGridViewModel?=null
-    private var adapter: MainListAdapter?=null
-    private var mainList:ArrayList<ContentRow>?=null
-    var section:String?=null
-    companion object{
-        val TAG=ContentFragment.javaClass.name
+    private var contentGridViewModel: ContentGridViewModel? = null
+    private var adapter: MainListAdapter? = null
+    private var mainList: ArrayList<ContentRow>? = null
+    var section: String? = null
+
+    companion object {
+        val TAG = ContentFragment.javaClass.name
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        section=arguments?.getString("section")
-        Log.d(TAG,"content section:{$section}")
+        section = arguments?.getString("section")
+        Log.d(TAG, "content section:{$section}")
     }
 
     override fun onCreateView(
@@ -38,56 +39,60 @@ class ContentFragment:Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view=activity?.layoutInflater?.inflate(R.layout.content_grid_main,null)
+        val view = activity?.layoutInflater?.inflate(R.layout.content_grid_main, null)
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mainList= ArrayList()
+        mainList = ArrayList()
         adapter = MainListAdapter(mainList!!)
-        parentRecyclerView.adapter=adapter
-        parentRecyclerView.layoutManager=LinearLayoutManager(activity, LinearLayoutManager.VERTICAL,false)
+        parentRecyclerView.adapter = adapter
+        parentRecyclerView.layoutManager =
+            LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
 
-        contentGridViewModel= ViewModelProvider.AndroidViewModelFactory(activity!!.application).create(ContentGridViewModel::class.java)
+        contentGridViewModel = ViewModelProvider.AndroidViewModelFactory(activity!!.application)
+            .create(ContentGridViewModel::class.java)
 
         contentGridViewModel?.getError()?.observe(activity!!, Observer {
-            if(it) {
-                errorTextId.visibility=View.VISIBLE
-                errorTextId.text="Not able to show content.\nTry again!!\n\n<Looks like service is down>"
+            if (it) {
+                errorTextId.visibility = View.VISIBLE
+                errorTextId.text =
+                    "Not able to show content.\nTry again!!\n\n<Looks like service is down>"
             }
         })
 
-        val configuaration= AppSessionManager(activity!!.applicationContext).fetchConfiguration()
-        if (configuaration==null) {
+        val configuaration = AppSessionManager(activity!!.applicationContext).fetchConfiguration()
+        if (configuaration == null) {
             contentGridViewModel?.loadConfigurations()
-        }else{
-            Log.d(TAG,"Configurations already available")
-            StringConstants.imageBaseURL=configuaration.images.base_url+"/"+configuaration.images.poster_sizes[2]
+        } else {
+            Log.d(TAG, "Configurations already available")
+            StringConstants.imageBaseURL =
+                configuaration.images.base_url + "/" + configuaration.images.poster_sizes[2]
             loadContent()
         }
 
         contentGridViewModel?.getConfigurationLiveData()?.observe(activity!!, Observer {
-            errorTextId.visibility=View.GONE
-            Log.d(TAG,"Received configurations(Image base url):{${it.images.base_url}}")
-            StringConstants.imageBaseURL=it.images.base_url+"/"+it.images.poster_sizes[2]
+            errorTextId.visibility = View.GONE
+            Log.d(TAG, "Received configurations(Image base url):{${it.images.base_url}}")
+            StringConstants.imageBaseURL = it.images.base_url + "/" + it.images.poster_sizes[2]
             AppSessionManager(activity!!.applicationContext).saveConfiguration(it)
         })
 
         contentGridViewModel?.getContentLiveData()?.observe(activity!!, Observer {
-            errorTextId.visibility=View.GONE
+            errorTextId.visibility = View.GONE
             addContentRow(it)
         })
     }
 
     private fun loadContent() {
-        if(section.equals("movies")) {
+        if (section.equals("movies")) {
             section?.let { contentGridViewModel?.loadContent(it, "Now playing") }
             section?.let { contentGridViewModel?.loadContent(it, "Upcoming") }
             section?.let { contentGridViewModel?.loadContent(it, "Latest") }
             section?.let { contentGridViewModel?.loadContent(it, "Popular") }
             section?.let { contentGridViewModel?.loadContent(it, "Top rated") }
-        }else if(section.equals("tvshows")){
+        } else if (section.equals("tvshows")) {
             section?.let { contentGridViewModel?.loadContent(it, "Airing today") }
             section?.let { contentGridViewModel?.loadContent(it, "On the air") }
             section?.let { contentGridViewModel?.loadContent(it, "Popular") }
